@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>French Word Trainer</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <nav class="top-nav" aria-label="页面导航">
+        <button class="app-nav active" data-app-page-target="home" type="button">首页</button>
+        <button class="app-nav" data-app-page-target="import" type="button">导入</button>
+        <button class="app-nav" data-app-page-target="practice" type="button">练习</button>
+      </nav>
+
+      <section class="home-page app-page active" data-app-page="home" aria-label="功能导览">
+        <div class="home-copy">
+          <p class="eyebrow">FRENCH VOCAB TRAINER</p>
+          <h1>法语单词训练</h1>
+          <p>导入词表后，按听音、看法语、拼写和背单词分别练习；每个部分有独立进度、准确率和错词记录。</p>
+          <div class="home-actions">
+            <button class="primary" data-open-import type="button">导入词表</button>
+            <button class="secondary" data-open-practice type="button">开始练习</button>
+          </div>
+        </div>
+
+        <div class="guide-grid" aria-label="功能入口">
+          <button class="guide-tile" data-open-practice data-mode-target="listenMeaning" type="button">
+            <span>01</span>
+            <strong>听音写中文</strong>
+            <small>听到法语后写中文意思和词性。</small>
+          </button>
+          <button class="guide-tile" data-open-practice data-mode-target="listenSpell" type="button">
+            <span>02</span>
+            <strong>听音拼写</strong>
+            <small>听发音后拼写法语，正确后自动下一题。</small>
+          </button>
+          <button class="guide-tile" data-open-practice data-mode-target="read" type="button">
+            <span>03</span>
+            <strong>看法语反应</strong>
+            <small>看到法语后写出可理解的中文意思和词性。</small>
+          </button>
+          <button class="guide-tile" data-open-practice data-mode-target="spell" type="button">
+            <span>04</span>
+            <strong>看中文拼写</strong>
+            <small>根据中文意思拼出法语单词。</small>
+          </button>
+        </div>
+      </section>
+
+      <section class="import-page app-page" data-app-page="import" aria-label="导入词表">
+        <aside class="panel import-panel">
+          <div class="brand">
+            <div>
+              <p class="eyebrow">FRENCH VOCAB</p>
+              <h1>导入词表</h1>
+            </div>
+            <button id="resetApp" class="icon-button danger" title="清空全部数据" aria-label="清空全部数据">⌫</button>
+          </div>
+
+          <label class="field-label" for="bookName">单词本名称</label>
+          <input id="bookName" autocomplete="off" placeholder="例如：法语 A1 基础词 / 听力高频词" />
+          <label class="field-label" for="wordInput">导入单词</label>
+          <textarea id="wordInput" spellcheck="false" placeholder="每行一个法语词，直接输入法语也可以：&#10;bonjour&#10;merci&#10;école&#10;&#10;也支持：bonjour, interj., 你好；早上好, Bonjour, comment ça va ?"></textarea>
+          <label class="field-label" for="listSize">每个 List 单词数</label>
+          <input id="listSize" type="number" min="5" max="100" value="20" />
+          <div class="import-actions">
+            <button id="loadSample" class="secondary">示例词表</button>
+            <button id="importWords" class="primary">导入</button>
+            <button class="secondary" data-open-practice type="button">去练习</button>
+          </div>
+          <p id="importStatus" class="import-status">可以直接粘贴法语单词列表。</p>
+          <p class="hint">支持只输入法语；命中内置法语词库会自动补全中文、词性和例句。也支持：法语, 词性, 中文释义, 法语例句。</p>
+        </aside>
+
+        <aside class="panel stats-panel">
+          <div class="record-head">
+            <div>
+              <p class="eyebrow">STATS</p>
+              <h2>学习统计</h2>
+            </div>
+          </div>
+          <div class="stats-grid">
+            <div>
+              <span id="totalWords">0</span>
+              <small>单词</small>
+            </div>
+            <div>
+              <span id="accuracyRate">--</span>
+              <small>当前部分正确率</small>
+            </div>
+            <div>
+              <span id="weakWords">0</span>
+              <small>待加强</small>
+            </div>
+          </div>
+          <p class="hint">统计会跟着当前练习部分变化。每个部分单独计算准确率和完成进度。</p>
+          <div class="wordbook-head">
+            <p class="eyebrow">WORD BOOK</p>
+            <h2>单词本</h2>
+          </div>
+          <div id="wordbookList" class="wordbook-list">
+            <p class="empty-state">导入后会自动生成按 List 分组的单词本。</p>
+          </div>
+        </aside>
+      </section>
+
+      <section class="workspace app-page" data-app-page="practice" aria-label="French vocabulary trainer">
+        <section class="practice-area">
+          <div class="toolbar">
+            <div class="segmented" role="tablist" aria-label="练习模式">
+              <button class="mode active" data-mode="listenMeaning">听音写中文</button>
+              <button class="mode" data-mode="listenSpell">听音拼写</button>
+              <button class="mode" data-mode="read">看法语</button>
+              <button class="mode" data-mode="spell">看中文拼写</button>
+              <button class="mode" data-mode="learn">背单词</button>
+            </div>
+            <div class="nav-arrows" aria-label="题目导航">
+              <select id="bookSelect" class="book-select" aria-label="选择单词本"></select>
+              <select id="listSelect" class="list-select" aria-label="选择 List"></select>
+              <select id="voiceSelect" class="voice-select" aria-label="选择发音"></select>
+              <button id="shuffleMode" class="shuffle-button" title="随机播放" aria-label="随机播放" aria-pressed="false">随机</button>
+              <button id="prevWord" class="arrow-button" title="上一题" aria-label="上一题">↑</button>
+              <button id="nextWord" class="arrow-button" title="下一题" aria-label="下一题">↓</button>
+            </div>
+          </div>
+
+          <article class="quiz-surface">
+            <div class="prompt-row">
+              <p id="modeLabel" class="eyebrow">听法语</p>
+              <div class="prompt-actions">
+                <button id="followRead" class="secondary compact" type="button">跟读</button>
+                <button id="speakWord" class="speak-button" title="播放法语发音 (Tab)" aria-label="播放法语发音，快捷键 Tab">▶</button>
+              </div>
+            </div>
+            <div class="progress-wrap" aria-label="学习进度">
+              <div class="progress-meta">
+                <span id="progressText">已完成 0 / 0 词</span>
+                <span id="progressPercent">0%</span>
+              </div>
+              <div class="progress-track">
+                <div id="progressBar" class="progress-bar"></div>
+              </div>
+            </div>
+            <h2 id="promptText">先导入词表</h2>
+            <p id="promptHelper">导入后会从词表中抽题，并记录每个单词错在哪一项。</p>
+            <p id="exampleSentence" class="example-sentence"></p>
+            <div id="studyDetails" class="study-details" hidden></div>
+
+            <form id="answerForm" class="answer-form">
+              <div id="englishGroup" class="input-group">
+                <label for="englishAnswer">法语拼写</label>
+                <input id="englishAnswer" autocomplete="off" spellcheck="false" />
+              </div>
+              <div id="meaningGroup" class="input-group">
+                <label for="meaningAnswer">中文意思</label>
+                <input id="meaningAnswer" autocomplete="off" />
+              </div>
+              <div id="partGroup" class="input-group">
+                <label for="partAnswer">词性</label>
+                <input id="partAnswer" autocomplete="off" placeholder="n. / v. / adj. ..." />
+              </div>
+              <div class="answer-actions">
+                <button id="checkAnswer" class="primary" type="submit">检查答案</button>
+                <button id="dontKnow" class="secondary" type="button">不会</button>
+              </div>
+            </form>
+
+            <div id="feedback" class="feedback empty" aria-live="polite">等待作答</div>
+          </article>
+        </section>
+
+        <aside id="recordPanel" class="panel record-panel">
+          <div class="record-head">
+            <div class="record-title">
+              <p class="eyebrow">RECORD</p>
+              <h2>错误记录</h2>
+            </div>
+            <div class="record-actions">
+              <button id="toggleRecords" class="secondary compact" type="button" aria-expanded="true">收起</button>
+              <button id="exportRecords" class="secondary compact">导出</button>
+              <button id="clearRecords" class="secondary compact">清记录</button>
+            </div>
+          </div>
+          <div class="legend">
+            <span><i class="dot listen"></i>听力</span>
+            <span><i class="dot meaning"></i>释义</span>
+            <span><i class="dot spelling"></i>拼写</span>
+            <span><i class="dot part"></i>词性</span>
+          </div>
+          <div id="recordList" class="record-list">
+            <p class="empty-state">还没有错题。开始练习后会自动记录。</p>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
